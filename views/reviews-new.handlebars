@@ -1,0 +1,20 @@
+<!-- reviews-new.handlebars -->
+<div class="row">
+    <div class="col-sm-6 col-sm-offset-3">
+        <form method="POST" action="/reviews">
+            <!-- FORM -->
+            {{> reviews-form type="new"}}
+
+            <!-- SAVE -->
+            <div class="form-group">
+                <button class="btn btn-primary" type="submit">Save Review</button>
+
+            <!-- RESET -->
+                <button class="btn btn-primary" type="reset">Reset Form</button>
+
+            <!-- CANCEL -->
+                <button class="btn btn-primary" onclick="location.href='/'" type="button">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
