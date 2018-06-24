@@ -7,7 +7,6 @@ const bodyParser = require('body-parser');
 const path = require('path');
 
 
-
 app.engine('handlebars', exphbs({
 	defaultLayout:'main',
 	layoutsDir: path.join(__dirname, '/views/layouts'),
@@ -24,7 +23,7 @@ app.engine('handlebars', exphbs({
 
 app.set('view engine', 'handlebars');
 app.use(bodyParser.urlencoded({extended: true}));
-mongoose.connect('mongodb://localhost/rotten-potatoes');
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/rotten-potatoes');
 
 const Review = mongoose.model('Review', {
 	title: String,
