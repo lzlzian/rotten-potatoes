@@ -6,7 +6,6 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const path = require('path');
 
-
 app.engine('handlebars', exphbs({
 	defaultLayout:'main',
 	layoutsDir: path.join(__dirname, '/views/layouts'),
@@ -25,12 +24,8 @@ app.set('view engine', 'handlebars');
 app.use(bodyParser.urlencoded({extended: true}));
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/rotten-potatoes');
 
-const Review = mongoose.model('Review', {
-	title: String,
-	movieTitle: String,
-	description: String,
-	rating: Number,
-});
+const Review = require('./models/review');
+const Comment = require('./models/comment');
 
 // INDEX
 app.get('/', (req, res)=>{
@@ -61,11 +56,16 @@ app.post('/reviews', (req, res)=>{
 
 // SHOW
 app.get('/reviews/:id', (req, res) => {
-	Review.findById(req.params.id).then((review) => {
-		res.render('reviews-show', {review: review});
+	const findReviews = Review.findById(req.params.id);
+	const findComments = Comment.find({ reviewId: Object(req.params.id)});
+
+	Promise.all([findReviews, findComments]).then((values) => {
+		console.log(values);
+		res.render('reviews-show', {review: values[0], comments: values[1]});
 	}).catch((err) => {
 		console.log(err.message);
 	});
+
 });
 
 // EDIT
@@ -89,6 +89,16 @@ app.delete('/reviews/:id', (req, res) => {
 	console.log("DELETE review");
 	Review.findByIdAndRemove(req.params.id).then((review) => {
 		res.redirect('/');
+	}).catch((err) => {
+		console.log(err.message);
+	});
+});
+
+// NEW comment
+app.post('/reviews/comments', (req, res) => {
+	console.log(req.body);
+	Comment.create(req.body).then((comment) => {
+		res.redirect('/reviews/' + comment.reviewId);
 	}).catch((err) => {
 		console.log(err.message);
 	});
